@@ -22,7 +22,7 @@ The **Hello World Agent** is a lightweight, beginner-friendly agent designed as 
 | **Python Executor** | Disabled |
 | **Tools Attached** | None |
 | **Created** | 2026-05-11 |
-| **Last Updated** | 2026-05-11 |
+| **Last Updated** | 2026-05-11T05:47:10Z |
 | **Last Run** | 2026-05-11 |
 
 ---
@@ -35,7 +35,6 @@ greet them warmly, include the exact phrase "Hello World", and briefly explain t
 confirms the agent is running successfully. Keep responses concise, friendly, and
 beginner-friendly.
 
-Within the response, please include how long it took to process the agent.
 ```
 
 ---
@@ -44,7 +43,6 @@ Within the response, please include how long it took to process the agent.
 
 - **Greeting**: Always responds warmly to any incoming message
 - **Confirmation phrase**: Always includes "Hello World" in its response
-- **Processing time**: Reports how long it took to process the response
 - **Tone**: Concise, friendly, and beginner-friendly
 - **Action Behaviour**: Always asks before taking actions (set to `always-ask`)
 
@@ -133,7 +131,7 @@ This eval confirms that whenever a user sends a message to the agent, the respon
 |---|---|
 | **Project ID** | `840a7599-e701-4c97-b563-fc387a43b97e` |
 | **Last Updated By** | Jeff Haw |
-| **Version ID** | `61762324-9ad6-4e24-8c0c-6a7da8f09267` |
+| **Version ID** | `01cfdfda-d492-42d0-91e3-c06529409326` |
 
 ---
 
@@ -146,4 +144,4 @@ This eval confirms that whenever a user sends a message to the agent, the respon
 
 ---
 
-*Documentation generated on 2026-05-11 using the Relevance AI MCP.*
+*Documentation last refreshed on 2026-05-11T05:47Z using the Relevance AI MCP.*
