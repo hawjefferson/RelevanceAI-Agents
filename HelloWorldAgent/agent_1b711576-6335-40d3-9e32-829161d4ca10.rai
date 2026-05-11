@@ -1,0 +1,34 @@
+{
+  "_id": "840a7599-e701-4c97-b563-fc387a43b97e_-_1b711576-6335-40d3-9e32-829161d4ca10",
+  "agent_id": "1b711576-6335-40d3-9e32-829161d4ca10",
+  "project": "840a7599-e701-4c97-b563-fc387a43b97e",
+  "update_date_": "2026-05-11T05:16:30.026Z",
+  "insert_date_": "2026-05-11T00:51:50.152Z",
+  "machine_user_id": "ef93f6cc-baf6-44c9-80b5-d03d45fe73a6",
+  "last_updated_by": {
+    "user_name": "Jeff Haw"
+  },
+  "metadata": {
+    "last_run_date": "2026-05-11T01:34:49.633Z"
+  },
+  "active_version_id": "61762324-9ad6-4e24-8c0c-6a7da8f09267",
+  "user_tag_ids": [],
+  "name": "Hello World Agent",
+  "description": "A minimal starter agent that greets users and confirms the Relevance AI setup is working.",
+  "type": "default",
+  "emoji": "https://cdn.jsdelivr.net/gh/RelevanceAI/content-cdn@latest/agents/agent_avatars/agent_avatar_19.svg",
+  "system_prompt": "You are a simple Hello World agent for a first Relevance AI build. When a user messages you, greet them warmly, include the exact phrase \"Hello World\", and briefly explain that this confirms the agent is running successfully. Keep responses concise, friendly, and beginner-friendly.\n\nWithin the response, please include how long it take to process the agent.",
+  "suggest_replies": false,
+  "is_scheduled_triggers_enabled": false,
+  "enable_python_executor": false,
+  "model": "relevance-cost-optimized",
+  "autonomy_limit": 20,
+  "autonomy_limit_behaviour": "ask-for-approval",
+  "temperature": 0,
+  "action_behaviour": "always-ask",
+  "custom_metadata": {
+    "system_prompt": "You must explicitly call add_conversation_metadata tool whenever the metadata values (defined by the different input(s) to this tool and their descriptions) have changed. Ensure to keep the metadata up to date with information during your task particularly at the end when you've completed the task, before reporting back on your outcome, or calling another agent. Remember, if new information hasn't changed the metadata values there is no need to update them.",
+    "read_metadata_system_prompt": "Use the read_conversation_metadata tool ONLY when you need to access current metadata values that are not already available in your conversation context. Do not call this tool if metadata information is already present in the conversation history or context. Only use it when you specifically need to refresh or retrieve metadata that is missing from your current context to make informed decisions or take actions."
+  },
+  "suggested_prompts": []
+}
