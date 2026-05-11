@@ -71,6 +71,37 @@ The agent has been run in **3 tasks**:
 
 ---
 
+## Evaluations
+
+The agent has **1 test set** configured to validate its core behaviour.
+
+### Test Set: Hello World Response Eval
+
+| Property | Value |
+|---|---|
+| **Test Set ID** | `9f40e6e6-48c6-465f-a5f8-d2f255a070b2` |
+| **Created** | 2026-05-11 |
+| **Test Cases** | 1 |
+
+#### Test Case: Response contains Hello World
+
+| Property | Value |
+|---|---|
+| **Test Case ID** | `35f65078-e819-4fd4-8121-a055a92cb6e5` |
+| **Prompt** | "Please introduce yourself." |
+| **Max Turns** | 1 |
+| **Runs per Scenario** | 1 |
+
+**Evaluator Rules:**
+
+| Rule | Type | Expected Value |
+|---|---|---|
+| Contains exact phrase Hello World | `string_contains` | `Hello World` |
+
+This eval confirms that whenever a user sends a message to the agent, the response always includes the literal phrase "Hello World" — the agent's primary success criterion.
+
+---
+
 ## Tools & Triggers
 
 - **Tools attached**: None
