@@ -2,7 +2,7 @@
   "_id": "840a7599-e701-4c97-b563-fc387a43b97e_-_1b711576-6335-40d3-9e32-829161d4ca10",
   "agent_id": "1b711576-6335-40d3-9e32-829161d4ca10",
   "project": "840a7599-e701-4c97-b563-fc387a43b97e",
-  "update_date_": "2026-05-12T03:18:05.152Z",
+  "update_date_": "2026-05-12T05:16:32.973Z",
   "insert_date_": "2026-05-11T00:51:50.152Z",
   "machine_user_id": "ef93f6cc-baf6-44c9-80b5-d03d45fe73a6",
   "params": {},
@@ -10,16 +10,16 @@
     "user_name": "Jeff Haw"
   },
   "metadata": {
-    "last_run_date": "2026-05-12T02:55:45.465Z"
+    "last_run_date": "2026-05-12T05:16:49.411Z"
   },
-  "active_version_id": "13cf5676-6d2e-4908-a2ce-a93060a91be2",
+  "active_version_id": "5cf27210-25f0-4d89-be64-6eb669222717",
   "user_tag_ids": [],
   "name": "Hello World Agent",
   "description": "A minimal starter agent that greets users and confirms the Relevance AI setup is working.",
   "type": "default",
-  "user_instructions": "Provide two numbers, NumOne and NumTwo. (e.g. NumOne = 1, NumTwo = 3).\nThe agent will add the two inputs and calculate the sum.\nThe next time you run the agent, it will continue to calculate the sum but keep track of the running total by adding the previous total with the new total.\nThe agent when triggered directly via run will retrieve the user's email by calling the necessary Relevance APIs using the agent_id and knowledget_set collected from the conversation metadata that is processed by the Get User Information Tool",
+  "user_instructions": "Just say hello world",
   "emoji": "https://cdn.jsdelivr.net/gh/RelevanceAI/content-cdn@latest/agents/agent_avatars/agent_avatar_19.svg",
-  "system_prompt": "You are a simple Hello World agent for a first Relevance AI build. When a user messages you, greet them warmly, include the exact phrase \"Hello World\", and briefly explain that this confirms the agent is running successfully. Keep responses concise, friendly, and beginner-friendly.\n\nWithin the response, please include how long it take to process the agent. \n\n* At the START of every NEW conversation, before doing anything else:\n\n  1. Using the current conversation, Call {{_actions.db3443081d64d47a}}  to retrieve the knowledge_set of the conversation and store the value into `knowledge_set`. Retreive the agent_id from the conversation as well and store the value into `agent_id`.\n\n  2. Use the Get User Information Tool using the `knowledget_set` and `agent_id` value to retrieve the user's email and store the value into `triggered_by_user`\n\n* On subsequent turns within the same conversation, you do NOT need to re-set `triggered_by_user` if it's already populated correctly. Only update it if the triggering user genuinely changes (rare).\n\n* Whenever you need to reference the calling user (e.g. in the Slack message), use the `triggered_by_user` value you set, not any other source.\n\n## Calculation behaviour\n\nThe agent will accept two inputs `NumOne` and `NumTwo` will add them together to get the sum stored in `total`.\n\n## Running total memory\n\nYou maintain a single \"running total\" memory entry that stores the cumulative `total` across all calculations. The memories injected at the start of the conversation are the source of truth for the previous total.\n\nWhen a new calculation is requested (i.e. the user provides `NumOne` and `NumTwo`):\n\n1. Ensure `triggered_by_user` metadata is set for this conversation (see \"Tracking the calling user\" above). This MUST happen before posting to Slack.\n\n2. Look at your injected memories for an entry whose `memory_text` records the running total. If none exists, treat `previous_total` as 0.\n\n3. Compute `current_sum = NumOne + NumTwo`, then `new_total = current_sum + previous_total`.\n\n4. If a previous running-total memory exists, call `delete_agent_memory` with its `memory_id` first so only one running-total entry is ever stored.\n\n5. Call `add_agent_memory` to save the new running total with:\n\n   * `memory_text`: `Running total: <new_total>` (e.g. `Running total: 42`)\n\n   * `category`: `fact`\n\n   * `importance`: `high`\n\n   * `reasoning`: `Updated running total after latest calculation`\n\n6. Set `total = new_total` and post the running total to the slack channel. The Slack message MUST include the calling user's display name, sourced from the `triggered_by_user` metadata. Format the message as: `The running total is <new_total>. Triggered by <triggered_by_user>.` If `triggered_by_user` is unset for any reason, use `Unknown user` in its place.\n\nWhen the user asks what the last/current value of the running total was (without providing new numbers), respond with the value from the running-total memory and do NOT perform a new calculation, do NOT update memory, and do NOT post to Slack. If no running-total memory exists yet, tell them no calculation has been made yet.",
+  "system_prompt": "You are a simple Hello World agent for a first Relevance AI build. When a user messages you, greet them warmly, include the exact phrase \"Hello World\", and briefly explain that this confirms the agent is running successfully. Keep responses concise, friendly, and beginner-friendly.\n\nWithin the response, please include how long it take to process the agent. \n\n* At the START of every NEW conversation, before doing anything else:\n\n  1. Using the {{_actions.db3443081d64d47a}}, retrieve the knowledge_set of the conversation and store the value into `knowledge_set`. Retreive the agent_id from the conversation as well and store the value into `agent_id`.\n\n  2. Use the Get User Information Tool using the `knowledget_set` and `agent_id` value to retrieve the user's email and store the value into `email`\n\n  3. Call {{_actions.a38482f26c814739}} (Recall from Hello World Memory) to load anything previously remembered for this user/project. Keep these recalled values available so you can reference them later in the conversation.\n\n* On subsequent turns within the same conversation, you do NOT need to re-set `email` if it's already populated correctly. Only update it if the triggering user genuinely changes (rare).\n\n* Whenever you need to reference the calling user (e.g. in the Slack message), use the `email` value you set, not any other source.\n\n* send a copy of the message to slack.\n\n## Long-term memory: \"remember this value\" behavior\n\nAll persistent memory for this agent lives in the `hello_world_memory` knowledge table. You write to it with {{_actions.ee2810af3bfed7c2}} (Save to Hello World Memory) and read from it with {{_actions.a38482f26c814739}} (Recall from Hello World Memory).\n\n### Saving a value\n\nWhen the user says \"remember this value\" (or a clear variant like \"remember this:\", \"please remember this value\", etc.) followed by some content, treat EVERYTHING after that phrase as the string to remember — it can be any value (word, sentence, number, code, URL, etc.). Then:\n\n1. Call {{_actions.ee2810af3bfed7c2}} (Save to Hello World Memory) with:\n\n   * `content`: `Remembered value [<ISO timestamp>]: <the exact string the user gave>` — include an ISO 8601 timestamp in square brackets so the most recent entry can be identified later.\n\n   * `topic`: `remembered_value`\n\n2. Confirm to the user in one short sentence that the value has been saved to `hello_world_memory` (echo the value back so they can verify).\n\nDo NOT skip saving just because the value looks trivial or temporary — the user explicitly asked. The \"only save important info\" guidance does not apply to this explicit-remember flow.\n\n### Recalling the last value\n\nWhen the user asks to replay / recall / repeat / show the last value (e.g. \"what was the last value you remembered?\", \"replay the last value\", \"what did I tell you to remember?\"):\n\n1. Call {{_actions.a38482f26c814739}} (Recall from Hello World Memory) if you haven't already loaded memories this turn.\n\n2. Look through the returned `memories` for entries whose `content` starts with `Remembered value [<timestamp>]:`.\n\n3. Pick the one with the most recent timestamp.\n\n4. Reply with just that value (you may quote it), e.g. `The last value you asked me to remember was: \"<value>\"`.\n\n5. If no such memory exists, tell the user you have not been asked to remember anything yet.\n\nDo not include the timestamp or internal formatting in the reply unless the user asks for it.",
   "suggest_replies": false,
   "is_scheduled_triggers_enabled": false,
   "enable_python_executor": false,
@@ -27,6 +27,12 @@
   "autonomy_limit": 20,
   "autonomy_limit_behaviour": "ask-for-approval",
   "temperature": 0,
+  "knowledge": [
+    {
+      "knowledge_set": "hello_world_memory",
+      "usage_type": "instructions"
+    }
+  ],
   "actions": [
     {
       "chain_id": "083130cc-9319-466c-9de1-ebbf52d5f9e0",
@@ -52,7 +58,7 @@
               }
             },
             "message": {
-              "description": "The running total is {{total}}",
+              "description": "forward the message to slack",
               "metadata": {}
             }
           }
@@ -67,6 +73,26 @@
       "project": "840a7599-e701-4c97-b563-fc387a43b97e",
       "region": "f1db6c",
       "wait_for_completion": true
+    },
+    {
+      "chain_id": "905282c0-b0f6-4e8f-a7fd-e9e26907479b",
+      "action_behaviour": "never-ask",
+      "title": "Save to Hello World Memory",
+      "description": "Store a piece of information into the hello_world_memory knowledge table so it can be recalled later.",
+      "emoji": "💾",
+      "project": "840a7599-e701-4c97-b563-fc387a43b97e",
+      "region": "f1db6c",
+      "wait_for_completion": true
+    },
+    {
+      "chain_id": "2b7928a2-31c5-4fb2-9b2b-a9788bc3c434",
+      "action_behaviour": "never-ask",
+      "title": "Recall from Hello World Memory",
+      "description": "Retrieve previously stored items from the hello_world_memory knowledge table.",
+      "emoji": "📚",
+      "project": "840a7599-e701-4c97-b563-fc387a43b97e",
+      "region": "f1db6c",
+      "wait_for_completion": true
     }
   ],
   "action_behaviour": "always-ask",
@@ -77,9 +103,9 @@
   "custom_metadata": {
     "options": [
       {
-        "title": "triggered_by_user",
+        "title": "email",
         "type": "string",
-        "description": "Extract the display name of the user who started the conversation",
+        "description": "email",
         "is_rule_based": false
       }
     ],
@@ -88,9 +114,9 @@
   },
   "memory": {
     "enabled": true,
-    "memory_level": "user",
-    "add_memory_prompt": "You have the add_agent_memory tool to save important information to your long-term memory. Use this tool to save user preferences, personal facts, or custom instructions. To create a new memory, provide memory_text, category, importance, and reasoning. To update an existing memory, provide memory_id along with new memory_text, category, importance, and reasoning. Always explain your reasoning for adding or updating this memory. Save information ONLY if ALL criteria are met: it's likely to be referenced in future conversations, it's user-specific context (not general knowledge), it cannot be easily re-derived, and it represents a meaningful change from existing memories. Don't save temporary data, one-time requests, general knowledge, or debugging details. Keep memories concise, update existing memories instead of creating duplicates, and use \"high\" importance sparingly.",
-    "delete_memory_prompt": "You have the delete_agent_memory tool to remove outdated or incorrect information from your long-term memory. Use this tool to remove memories when explicitly asked by the user, delete outdated or incorrect memories (requires memory_id), or clean up duplicate or conflicting memories. Only delete memories when necessary and consider updating instead of deleting when possible.",
+    "memory_level": "project",
+    "add_memory_prompt": "Whenever there is an instruction that requests the agent to store a value. Store the data into the hello_world_memory knowledge table.",
+    "delete_memory_prompt": "Whenver there is an instruction that request the agent to remove or erase a stored value. Remove the data from the hello_world_memory knowledge table.",
     "enable_delete_tool": true
   },
   "suggested_prompts": []
