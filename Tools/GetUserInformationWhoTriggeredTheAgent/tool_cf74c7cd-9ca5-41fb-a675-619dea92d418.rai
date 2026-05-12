@@ -1,0 +1,116 @@
+{
+  "studio_id": "cf74c7cd-9ca5-41fb-a675-619dea92d418",
+  "version": "latest",
+  "project": "840a7599-e701-4c97-b563-fc387a43b97e",
+  "_id": "840a7599-e701-4c97-b563-fc387a43b97e_-_cf74c7cd-9ca5-41fb-a675-619dea92d418_-_latest",
+  "in_marketplace": false,
+  "insert_date_": "2026-05-12T02:49:54.920Z",
+  "update_date_": "2026-05-12T02:52:16.257Z",
+  "is_hidden": false,
+  "tags": {},
+  "creator_user_id": "83968171-b085-4849-bd0b-a58dece47efd",
+  "creator_first_name": "Jeff",
+  "creator_last_name": "Haw",
+  "publicly_triggerable": false,
+  "public": false,
+  "metadata": {
+    "last_run_date": "2026-05-12T02:56:23.107Z"
+  },
+  "active_version_id": "dcfda753-d7f1-4d53-9d7e-c9acc8b0bfe9",
+  "owner_user_id": "83968171-b085-4849-bd0b-a58dece47efd",
+  "title": "Get User's Email who triggered the Agent",
+  "description": "This tool gets the email of the user who triggered the agent via chat.",
+  "prompt_description": "This tool retrieves the email of the user who triggered the agent.",
+  "transformations": {
+    "steps": [
+      {
+        "name": "relevance_api_call",
+        "transformation": "relevance_api_call",
+        "params": {
+          "path": "/agents/{{agent_id}}/tasks/{{knowledge_set}}/metadata",
+          "method": "GET"
+        },
+        "version": 1,
+        "output": {
+          "response_body": "{{response_body}}",
+          "status": "{{status}}"
+        }
+      },
+      {
+        "name": "get_user",
+        "transformation": "relevance_api_call",
+        "params": {
+          "path": "/auth/users/{{relevance_api_call.response_body.metadata.conversation.user_id}}",
+          "method": "GET"
+        },
+        "version": 1,
+        "output": {
+          "response_body": "{{response_body}}",
+          "status": "{{status}}"
+        }
+      },
+      {
+        "name": "email",
+        "transformation": "object_key_filter",
+        "params": {
+          "haystack": "{{get_user.response_body}}",
+          "needle": "email"
+        },
+        "version": 1,
+        "display_name": "Get Email"
+      }
+    ],
+    "output": {
+      "email_filtered_email": "{{email.filtered.email}}"
+    }
+  },
+  "params_schema": {
+    "properties": {
+      "knowledge_set": {
+        "metadata": {
+          "is_frontend_required": false,
+          "api_selector_placeholder": "Select Option...",
+          "hidden": false,
+          "relevance_only": false,
+          "advanced": false,
+          "dont_substitute": false
+        },
+        "order": 1,
+        "type": "string",
+        "title": "knowledge_set",
+        "description": "This is the knowledge_set"
+      },
+      "agent_id": {
+        "metadata": {
+          "is_frontend_required": false,
+          "api_selector_placeholder": "Select Option...",
+          "hidden": false,
+          "relevance_only": false,
+          "advanced": false,
+          "dont_substitute": false
+        },
+        "order": 2,
+        "type": "string",
+        "title": "agent_id",
+        "description": "This is the agent_id"
+      }
+    },
+    "required": [
+      "knowledge_set",
+      "agent_id"
+    ],
+    "type": "object"
+  },
+  "output_schema": {},
+  "state_mapping": {
+    "relevance_api_call": "steps.relevance_api_call.output",
+    "knowledge_set": "params.knowledge_set",
+    "get_user": "steps.get_user.output",
+    "email": "steps.email.output",
+    "agent_id": "params.agent_id"
+  },
+  "integration_requirements": {
+    "api_keys": [],
+    "oauth": []
+  }
+}
