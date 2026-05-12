@@ -1,2 +1,2 @@
 # RelevanceAI-Agents
-This is a repository containing Relevance AI agents developed by the RelevanceAI SE team
+This is a repository containing Relevance AI agents developed by the RelevanceAI Solutions Engineering team
