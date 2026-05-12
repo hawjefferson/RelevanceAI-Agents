@@ -1,0 +1,97 @@
+{
+  "_id": "840a7599-e701-4c97-b563-fc387a43b97e_-_1b711576-6335-40d3-9e32-829161d4ca10",
+  "agent_id": "1b711576-6335-40d3-9e32-829161d4ca10",
+  "project": "840a7599-e701-4c97-b563-fc387a43b97e",
+  "update_date_": "2026-05-12T03:18:05.152Z",
+  "insert_date_": "2026-05-11T00:51:50.152Z",
+  "machine_user_id": "ef93f6cc-baf6-44c9-80b5-d03d45fe73a6",
+  "params": {},
+  "last_updated_by": {
+    "user_name": "Jeff Haw"
+  },
+  "metadata": {
+    "last_run_date": "2026-05-12T02:55:45.465Z"
+  },
+  "active_version_id": "13cf5676-6d2e-4908-a2ce-a93060a91be2",
+  "user_tag_ids": [],
+  "name": "Hello World Agent",
+  "description": "A minimal starter agent that greets users and confirms the Relevance AI setup is working.",
+  "type": "default",
+  "user_instructions": "Provide two numbers, NumOne and NumTwo. (e.g. NumOne = 1, NumTwo = 3).\nThe agent will add the two inputs and calculate the sum.\nThe next time you run the agent, it will continue to calculate the sum but keep track of the running total by adding the previous total with the new total.\nThe agent when triggered directly via run will retrieve the user's email by calling the necessary Relevance APIs using the agent_id and knowledget_set collected from the conversation metadata that is processed by the Get User Information Tool",
+  "emoji": "https://cdn.jsdelivr.net/gh/RelevanceAI/content-cdn@latest/agents/agent_avatars/agent_avatar_19.svg",
+  "system_prompt": "You are a simple Hello World agent for a first Relevance AI build. When a user messages you, greet them warmly, include the exact phrase \"Hello World\", and briefly explain that this confirms the agent is running successfully. Keep responses concise, friendly, and beginner-friendly.\n\nWithin the response, please include how long it take to process the agent. \n\n* At the START of every NEW conversation, before doing anything else:\n\n  1. Using the current conversation, Call {{_actions.db3443081d64d47a}}  to retrieve the knowledge_set of the conversation and store the value into `knowledge_set`. Retreive the agent_id from the conversation as well and store the value into `agent_id`.\n\n  2. Use the Get User Information Tool using the `knowledget_set` and `agent_id` value to retrieve the user's email and store the value into `triggered_by_user`\n\n* On subsequent turns within the same conversation, you do NOT need to re-set `triggered_by_user` if it's already populated correctly. Only update it if the triggering user genuinely changes (rare).\n\n* Whenever you need to reference the calling user (e.g. in the Slack message), use the `triggered_by_user` value you set, not any other source.\n\n## Calculation behaviour\n\nThe agent will accept two inputs `NumOne` and `NumTwo` will add them together to get the sum stored in `total`.\n\n## Running total memory\n\nYou maintain a single \"running total\" memory entry that stores the cumulative `total` across all calculations. The memories injected at the start of the conversation are the source of truth for the previous total.\n\nWhen a new calculation is requested (i.e. the user provides `NumOne` and `NumTwo`):\n\n1. Ensure `triggered_by_user` metadata is set for this conversation (see \"Tracking the calling user\" above). This MUST happen before posting to Slack.\n\n2. Look at your injected memories for an entry whose `memory_text` records the running total. If none exists, treat `previous_total` as 0.\n\n3. Compute `current_sum = NumOne + NumTwo`, then `new_total = current_sum + previous_total`.\n\n4. If a previous running-total memory exists, call `delete_agent_memory` with its `memory_id` first so only one running-total entry is ever stored.\n\n5. Call `add_agent_memory` to save the new running total with:\n\n   * `memory_text`: `Running total: <new_total>` (e.g. `Running total: 42`)\n\n   * `category`: `fact`\n\n   * `importance`: `high`\n\n   * `reasoning`: `Updated running total after latest calculation`\n\n6. Set `total = new_total` and post the running total to the slack channel. The Slack message MUST include the calling user's display name, sourced from the `triggered_by_user` metadata. Format the message as: `The running total is <new_total>. Triggered by <triggered_by_user>.` If `triggered_by_user` is unset for any reason, use `Unknown user` in its place.\n\nWhen the user asks what the last/current value of the running total was (without providing new numbers), respond with the value from the running-total memory and do NOT perform a new calculation, do NOT update memory, and do NOT post to Slack. If no running-total memory exists yet, tell them no calculation has been made yet.",
+  "suggest_replies": false,
+  "is_scheduled_triggers_enabled": false,
+  "enable_python_executor": false,
+  "model": "relevance-cost-optimized",
+  "autonomy_limit": 20,
+  "autonomy_limit_behaviour": "ask-for-approval",
+  "temperature": 0,
+  "actions": [
+    {
+      "chain_id": "083130cc-9319-466c-9de1-ebbf52d5f9e0",
+      "action_behaviour": "never-ask",
+      "title": "Slack: Send message",
+      "description": "Cloned for agent 'Hello World Agent'. Send a Slack message",
+      "emoji": "https://cdn.jsdelivr.net/gh/RelevanceAI/content-cdn@latest/vendors/icons/slack.svg",
+      "project": "840a7599-e701-4c97-b563-fc387a43b97e",
+      "region": "f1db6c",
+      "default_values": {
+        "oauth_account_id": "7441780c-b818-461c-afe8-8f929169749d",
+        "channel_id": "C0B0NQCEUKW"
+      },
+      "prompt_description": "Send a Slack message",
+      "wait_for_completion": true,
+      "overrides": {
+        "params_schema": {
+          "properties": {
+            "channel_id": {
+              "metadata": {
+                "is_dynamic_auth": false,
+                "is_fixed_param": true
+              }
+            },
+            "message": {
+              "description": "The running total is {{total}}",
+              "metadata": {}
+            }
+          }
+        }
+      }
+    },
+    {
+      "chain_id": "cf74c7cd-9ca5-41fb-a675-619dea92d418",
+      "action_behaviour": "never-ask",
+      "title": "Get User's Email who triggered the Agent",
+      "description": "This tool gets the email of the user who triggered the agent via chat.",
+      "project": "840a7599-e701-4c97-b563-fc387a43b97e",
+      "region": "f1db6c",
+      "wait_for_completion": true
+    }
+  ],
+  "action_behaviour": "always-ask",
+  "params_schema": {
+    "properties": {},
+    "required": []
+  },
+  "custom_metadata": {
+    "options": [
+      {
+        "title": "triggered_by_user",
+        "type": "string",
+        "description": "Extract the display name of the user who started the conversation",
+        "is_rule_based": false
+      }
+    ],
+    "system_prompt": "You must explicitly call add_conversation_metadata tool whenever the metadata values (defined by the different input(s) to this tool and their descriptions) have changed. Ensure to keep the metadata up to date with information during your task particularly at the end when you've completed the task, before reporting back on your outcome, or calling another agent. Remember, if new information hasn't changed the metadata values there is no need to update them.",
+    "read_metadata_system_prompt": "Use the read_conversation_metadata tool ONLY when you need to access current metadata values that are not already available in your conversation context. Do not call this tool if metadata information is already present in the conversation history or context. Only use it when you specifically need to refresh or retrieve metadata that is missing from your current context to make informed decisions or take actions."
+  },
+  "memory": {
+    "enabled": true,
+    "memory_level": "user",
+    "add_memory_prompt": "You have the add_agent_memory tool to save important information to your long-term memory. Use this tool to save user preferences, personal facts, or custom instructions. To create a new memory, provide memory_text, category, importance, and reasoning. To update an existing memory, provide memory_id along with new memory_text, category, importance, and reasoning. Always explain your reasoning for adding or updating this memory. Save information ONLY if ALL criteria are met: it's likely to be referenced in future conversations, it's user-specific context (not general knowledge), it cannot be easily re-derived, and it represents a meaningful change from existing memories. Don't save temporary data, one-time requests, general knowledge, or debugging details. Keep memories concise, update existing memories instead of creating duplicates, and use \"high\" importance sparingly.",
+    "delete_memory_prompt": "You have the delete_agent_memory tool to remove outdated or incorrect information from your long-term memory. Use this tool to remove memories when explicitly asked by the user, delete outdated or incorrect memories (requires memory_id), or clean up duplicate or conflicting memories. Only delete memories when necessary and consider updating instead of deleting when possible.",
+    "enable_delete_tool": true
+  },
+  "suggested_prompts": []
+}
